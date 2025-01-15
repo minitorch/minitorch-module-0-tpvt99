@@ -1,14 +1,13 @@
-# from typing import Callable, List, Tuple
+from typing import List
 
 import pytest
 from hypothesis import given
-# from hypothesis.strategies import lists
+from hypothesis.strategies import lists
 
-# from minitorch import MathTest
-# import minitorch
+import minitorch
 from minitorch.operators import (
     add,
-    # addLists,
+    addLists,
     eq,
     id,
     inv,
@@ -18,12 +17,12 @@ from minitorch.operators import (
     max,
     mul,
     neg,
-    # negList,
-    # prod,
+    negList,
+    prod,
     relu,
     relu_back,
     sigmoid,
-    # sum,
+    sum,
 )
 
 from .strategies import assert_close, small_floats
@@ -159,11 +158,13 @@ def test_distribute(a: float, b: float, c: float) -> None:
     assert eq(mul(a, b + c), mul(a, b) + mul(a, c))
 
 
-# @pytest.mark.task0_2
-# def test_other() -> None:
-# """Write a test that ensures some other property holds for your functions."""
-## TODO: Implement for Task 0.2.
-# raise NotImplementedError("Need to implement for Task 0.2")
+@pytest.mark.task0_2
+@given(small_floats, small_floats, small_floats)
+def test_other(a: float, b: float, c: float) -> None:
+    """Write a test that ensures some other property holds for your functions."""
+    # associativity
+    assert_close(mul(a, mul(b, c)), mul(mul(a, b), c))
+    assert_close(add(a, add(b, c)), add(add(a, b), c))
 
 
 ## ## Task 0.3  - Higher-order functions
@@ -172,46 +173,45 @@ def test_distribute(a: float, b: float, c: float) -> None:
 ## properties.
 
 
-# @pytest.mark.task0_3
-# @given(small_floats, small_floats, small_floats, small_floats)
-# def test_zip_with(a: float, b: float, c: float, d: float) -> None:
-# x1, x2 = addLists([a, b], [c, d])
-# y1, y2 = a + c, b + d
-# assert_close(x1, y1)
-# assert_close(x2, y2)
+@pytest.mark.task0_3
+@given(small_floats, small_floats, small_floats, small_floats)
+def test_zip_with(a: float, b: float, c: float, d: float) -> None:
+    x1, x2 = addLists([a, b], [c, d])
+    y1, y2 = a + c, b + d
+    assert_close(x1, y1)
+    assert_close(x2, y2)
 
 
-# @pytest.mark.task0_3
-# @given(
-# lists(small_floats, min_size=5, max_size=5),
-# lists(small_floats, min_size=5, max_size=5),
-# )
-# def test_sum_distribute(ls1: List[float], ls2: List[float]) -> None:
-# """Write a test that ensures that the sum of `ls1` plus the sum of `ls2`
-# is the same as the sum of each element of `ls1` plus each element of `ls2`.
-# """
-## TODO: Implement for Task 0.3.
-# raise NotImplementedError("Need to implement for Task 0.3")
+@pytest.mark.task0_3
+@given(
+    lists(small_floats, min_size=5, max_size=5),
+    lists(small_floats, min_size=5, max_size=5),
+)
+def test_sum_distribute(ls1: List[float], ls2: List[float]) -> None:
+    """Write a test that ensures that the sum of `ls1` plus the sum of `ls2`
+    is the same as the sum of each element of `ls1` plus each element of `ls2`.
+    """
+    assert_close(sum(ls1) + sum(ls2), sum(addLists(ls1, ls2)))
 
 
-# @pytest.mark.task0_3
-# @given(lists(small_floats))
-# def test_sum(ls: List[float]) -> None:
-# assert_close(sum(ls), minitorch.operators.sum(ls))
+@pytest.mark.task0_3
+@given(lists(small_floats))
+def test_sum(ls: List[float]) -> None:
+    assert_close(sum(ls), minitorch.operators.sum(ls))
 
 
-# @pytest.mark.task0_3
-# @given(small_floats, small_floats, small_floats)
-# def test_prod(x: float, y: float, z: float) -> None:
-# assert_close(prod([x, y, z]), x * y * z)
+@pytest.mark.task0_3
+@given(small_floats, small_floats, small_floats)
+def test_prod(x: float, y: float, z: float) -> None:
+    assert_close(prod([x, y, z]), x * y * z)
 
 
-# @pytest.mark.task0_3
-# @given(lists(small_floats))
-# def test_negList(ls: List[float]) -> None:
-# check = negList(ls)
-# for i, j in zip(ls, check):
-# assert_close(i, -j)
+@pytest.mark.task0_3
+@given(lists(small_floats))
+def test_negList(ls: List[float]) -> None:
+    check = negList(ls)
+    for i, j in zip(ls, check):
+        assert_close(i, -j)
 
 
 ## ## Generic mathematical tests

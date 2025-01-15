@@ -2,6 +2,8 @@
 
 import math
 
+from typing import Iterable, Callable
+
 # ## Task 0.1
 
 #
@@ -102,47 +104,47 @@ def exp(x: float) -> float:
     return math.exp(x)
 
 
-def log_back(x: float, d: float) -> float:
-    """Return backprop of log of x"""
-    return d * inv(x)
-
-
 def inv(x: float) -> float:
     """Return inverse of x"""
     return 1.0 / x
 
 
+def log_back(x: float, d: float) -> float:
+    """Return backprop of log of x times d"""
+    return d * inv(x)
+
+
 def inv_back(x: float, d: float) -> float:
-    """Return derivative of inverse of x"""
-    return -d * pow(inv(x), 2)
+    """Return derivative of inverse of x times d"""
+    return -d * inv(pow(x, 2))
 
 
 def relu_back(x: float, d: float) -> float:
-    """Return derivative of relu"""
+    """Return derivative of relu times d"""
     if x > 0:
         return d
     else:
         return 0
 
 
-# def addLists():
-# """Empty"""
-# return 1
+def addLists(items1: Iterable[float], items2: Iterable[float]) -> Iterable[float]:
+    """Add corresponding elements from two lists"""
+    return zipWith(add, items1, items2)
 
 
-# def negList():
-# """Empty"""
-# return 1
+def negList(items: Iterable[float]) -> Iterable[float]:
+    """Negate all elements"""
+    return map(neg, items)
 
 
-# def prod():
-# """Empty"""
-# return 1
+def prod(items: Iterable[float]) -> float:
+    """Calculate the product of all elements in a list"""
+    return reduce(mul, items)
 
 
-# def sum():
-# """Empty"""
-# return 1
+def sum(items: Iterable[float]) -> float:
+    """Sum all elements in a list"""
+    return reduce(add, items)
 
 
 # ## Task 0.3
@@ -161,4 +163,33 @@ def relu_back(x: float, d: float) -> float:
 # - prod: take the product of lists
 
 
-# TODO: Implement for Task 0.3.
+def map(func: Callable, items: Iterable[float]) -> Iterable[float]:
+    """Apply func to each element in items list"""
+    ret = []
+    for item in items:
+        ret.append(func(item))
+    return ret
+
+
+def zipWith(
+    func: Callable, list1: Iterable[float], list2: Iterable[float]
+) -> Iterable[float]:
+    """Combine elements from two iterables using a func"""
+    ret = []
+    for a, b in zip(list1, list2):
+        ret.append(func(a, b))
+    return ret
+
+
+def reduce(func: Callable, items: Iterable[float]) -> float:
+    """Reduce an iterable to a single value using a given func"""
+    item_list = list(items)
+    if len(item_list) == 0:
+        return 0
+    elif len(item_list) == 1:
+        return item_list[0]
+
+    ret = func(item_list[0], item_list[1])
+    for i in range(2, len(item_list)):
+        ret = func(ret, item_list[i])
+    return ret
